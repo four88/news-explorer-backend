@@ -16,3 +16,6 @@ node_modules
 
 # env
 .env
+
+#lint
+.eslintrc
