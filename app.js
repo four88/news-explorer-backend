@@ -16,6 +16,8 @@ const NotFoundError = require('./errors/notFoundError');
 const app = express();
 // allow another service point
 const allowedCors = [
+  'https://news-project.students.nomoredomainssbs.ru',
+  'https://www.news-project.students.nomoredomainssbs.ru',
   'localhost:3000',
 ];
 
