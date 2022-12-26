@@ -3,15 +3,14 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const helmet = require('helmet');
+const dotenv = require('dotenv');
+const { errors } = require('celebrate');
 
 const { PORT = 3000 } = process.env;
-const { celebrate, Joi, errors } = require('celebrate');
-const { createUser, login } = require('./controllers/users');
-const userRoutes = require('./routes/users');
-const articleRoutes = require('./routes/articles');
-const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const NotFoundError = require('./errors/notFoundError');
+const { router } = require('./routes/index');
+
+const { NODE_ENV, DB_URI } = process.env;
 
 const app = express();
 // allow another service point
@@ -21,6 +20,7 @@ const allowedCors = [
   'localhost:3000',
 ];
 
+dotenv.config();
 // set up and connect to DB
 const dbUri = 'mongodb://0.0.0.0:27017/newsExplorerDB';
 const dbConfig = {
@@ -28,7 +28,7 @@ const dbConfig = {
 };
 mongoose.Promise = global.Promise;
 // connect DB
-mongoose.connect(dbUri, dbConfig)
+mongoose.connect(NODE_ENV === 'production' ? DB_URI : dbUri, dbConfig)
   .then(
     () => {
       console.log('DB connected');
@@ -38,11 +38,11 @@ mongoose.connect(dbUri, dbConfig)
     },
   );
 
-// logger requestLogger
-app.use(requestLogger);
-
 // use helment for security
 app.use(helmet());
+
+// logger requestLogger
+app.use(requestLogger);
 
 // use body-parser for work with http data transfer
 // especially json format
@@ -69,32 +69,8 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-/// / routes signup and signin
-// signup
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-    name: Joi.string().min(2).max(30).required(),
-  }),
-}), createUser);
-// signin
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-  }),
-}), login);
-
-// authentication required JWT for pass to these routes
-app.use(auth);
-app.use('/user', userRoutes);
-app.use('/article', articleRoutes);
-
-// for random route not includes in this project
-app.get('*', () => {
-  throw new NotFoundError('Request resource not found');
-});
+// routes
+app.use(router);
 
 // logger
 app.use(errorLogger);
