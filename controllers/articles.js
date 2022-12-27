@@ -61,3 +61,16 @@ module.exports.deleteArticle = (req, res, next) => {
       }
     });
 };
+
+// get saved articlle
+module.exports.getSaveArticle = (req, res, next) => {
+  if (!mongoose.Types.ObjectId.isValid(req.user._id)) {
+    throw new NotFoundError('Not found this user Id');
+  }
+
+  Articles.find({ owner: req.user._id }).select('+owner')
+    .then((article) => {
+      res.status(SUCCESS_CODE).send({ data: article });
+    })
+    .catch(next);
+};

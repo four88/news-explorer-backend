@@ -4,6 +4,7 @@ const { celebrate, Joi } = require('celebrate');
 const {
   createArticle,
   deleteArticle,
+  getSaveArticle,
 } = require('../controllers/articles');
 
 router.post('/', celebrate({
@@ -21,6 +22,8 @@ router.post('/', celebrate({
     owner: Joi.string(),
   }),
 }), createArticle);
+
+router.get('/', getSaveArticle);
 
 router.delete(
   '/:articleId',
