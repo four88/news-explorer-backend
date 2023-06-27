@@ -6,11 +6,12 @@ const helmet = require('helmet');
 const dotenv = require('dotenv');
 const { errors } = require('celebrate');
 
-const { PORT = 3000 } = process.env;
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { router } = require('./routes/index');
 
+dotenv.config();
 const { NODE_ENV, DB_URI } = process.env;
+const { PORT = 3000 } = process.env;
 
 const app = express();
 // allow another service point
@@ -20,23 +21,22 @@ const allowedCors = [
   'localhost:3000',
 ];
 
-dotenv.config();
 // set up and connect to DB
-const dbUri = 'mongodb://0.0.0.0:27017/newsExplorerDB';
 const dbConfig = {
   useNewUrlParser: true,
 };
 mongoose.Promise = global.Promise;
 // connect DB
-mongoose.connect(NODE_ENV === 'production' ? DB_URI : dbUri, dbConfig)
-  .then(
-    () => {
-      console.log('DB connected');
-    },
-    (err) => {
-      console.log(`cannot connect to DB: ${err}`);
-    },
-  );
+//
+
+mongoose.connect(NODE_ENV === 'production' ? DB_URI : DB_URI, dbConfig).then(
+  () => {
+    console.log('DB connected');
+  },
+  (err) => {
+    console.log(`cannot connect to DB: ${err}`);
+  },
+);
 
 // use helment for security
 app.use(helmet());
@@ -47,15 +47,18 @@ app.use(requestLogger);
 // use body-parser for work with http data transfer
 // especially json format
 app.use(bodyParser.json(), cors());
-app.use(bodyParser.urlencoded({
-  extended: true,
-}));
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  }),
+);
 
 // middleware for allow a cors
 app.use((req, res, next) => {
   const { origin } = req.headers; // assign the corresponding header to the origin variable
 
-  if (allowedCors.includes(origin)) { // check that the origin value is among the allowed domains
+  if (allowedCors.includes(origin)) {
+    // check that the origin value is among the allowed domains
     res.header('Access-Control-Allow-Origin', origin);
   }
   next();
@@ -78,11 +81,9 @@ app.use(errorLogger);
 app.use(errors());
 // for Non-exestent address
 app.use((err, req, res, next) => {
-  res
-    .status(err.statusCode ? err.statusCode : 500)
-    .send({
-      message: err.message ? err.message : 'An error occurred on the server',
-    });
+  res.status(err.statusCode ? err.statusCode : 500).send({
+    message: err.message ? err.message : 'An error occurred on the server',
+  });
 });
 
 // connect port
