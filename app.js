@@ -19,6 +19,7 @@ const allowedCors = [
   'https://news-project.students.nomoredomainssbs.ru',
   'https://www.news-project.students.nomoredomainssbs.ru',
   'localhost:3000',
+  'https://649ab4fcce5a766433de0fb7--euphonious-twilight-07d568.netlify.app/',
 ];
 
 // set up and connect to DB
@@ -54,17 +55,29 @@ app.use(
 );
 
 // middleware for allow a cors
-app.use((req, res, next) => {
-  const { origin } = req.headers; // assign the corresponding header to the origin variable
+// app.use((req, res, next) => {
+//   const { origin } = req.headers; // assign the corresponding header to the origin variable
+//
+//   if (allowedCors.includes(origin)) {
+//     // check that the origin value is among the allowed domains
+//     res.header('Access-Control-Allow-Origin', origin);
+//   }
+//   next();
+// });
+//
+// app.options('*', cors());
 
-  if (allowedCors.includes(origin)) {
-    // check that the origin value is among the allowed domains
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-  next();
-});
+const corsOptions = {
+  origin(origin, callback) {
+    if (allowedCors.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+};
 
-app.options('*', cors());
+app.use(cors(corsOptions));
 
 app.get('/crash-test', () => {
   setTimeout(() => {
