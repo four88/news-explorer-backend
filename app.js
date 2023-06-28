@@ -15,12 +15,12 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 // allow another service point
-const allowedCors = [
-  'https://news-project.students.nomoredomainssbs.ru',
-  'https://www.news-project.students.nomoredomainssbs.ru',
-  'http://localhost:3000',
-  'https://649ab4fcce5a766433de0fb7--euphonious-twilight-07d568.netlify.app',
-];
+// const allowedCors = [
+//   'https://news-project.students.nomoredomainssbs.ru',
+//   'https://www.news-project.students.nomoredomainssbs.ru',
+//   'http://localhost:3000',
+//   'https://649ab4fcce5a766433de0fb7--euphonious-twilight-07d568.netlify.app',
+// ];
 
 // set up and connect to DB
 const dbConfig = {
@@ -67,17 +67,17 @@ app.use(
 //
 // app.options('*', cors());
 
-const corsOptions = {
-  origin(origin, callback) {
-    if (allowedCors.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-};
-
-app.use(cors(corsOptions));
+// const corsOptions = {
+//   origin(origin, callback) {
+//     if (allowedCors.indexOf(origin) !== -1 || !origin) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+// };
+//
+// app.use(cors(corsOptions));
 
 app.get('/crash-test', () => {
   setTimeout(() => {
