@@ -18,8 +18,8 @@ const app = express();
 const allowedCors = [
   'https://news-project.students.nomoredomainssbs.ru',
   'https://www.news-project.students.nomoredomainssbs.ru',
-  'localhost:3000',
-  'https://649ab4fcce5a766433de0fb7--euphonious-twilight-07d568.netlify.app/',
+  'http://localhost:3000',
+  'https://649ab4fcce5a766433de0fb7--euphonious-twilight-07d568.netlify.app',
 ];
 
 // set up and connect to DB
