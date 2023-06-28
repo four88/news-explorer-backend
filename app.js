@@ -15,12 +15,13 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 // allow another service point
-// const allowedCors = [
-//   'https://news-project.students.nomoredomainssbs.ru',
-//   'https://www.news-project.students.nomoredomainssbs.ru',
-//   'http://localhost:3000',
-//   'https://649ab4fcce5a766433de0fb7--euphonious-twilight-07d568.netlify.app',
-// ];
+const allowedCors = [
+  'https://news-project.students.nomoredomainssbs.ru',
+  'https://www.news-project.students.nomoredomainssbs.ru',
+  'http://localhost:3000',
+  'https://euphonious-twilight-07d568.netlify.app/',
+  'https://649ab4fcce5a766433de0fb7--euphonious-twilight-07d568.netlify.app',
+];
 
 // set up and connect to DB
 const dbConfig = {
@@ -45,6 +46,17 @@ app.use(helmet());
 // logger requestLogger
 app.use(requestLogger);
 
+// middleware for allow a cors
+app.use((req, res, next) => {
+  const { origin } = req.headers; // assign the corresponding header to the origin variable
+
+  if (allowedCors.includes(origin)) {
+    // check that the origin value is among the allowed domains
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  next();
+});
+
 // use body-parser for work with http data transfer
 // especially json format
 app.use(bodyParser.json(), cors());
@@ -54,16 +66,6 @@ app.use(
   }),
 );
 
-// middleware for allow a cors
-// app.use((req, res, next) => {
-//   const { origin } = req.headers; // assign the corresponding header to the origin variable
-//
-//   if (allowedCors.includes(origin)) {
-//     // check that the origin value is among the allowed domains
-//     res.header('Access-Control-Allow-Origin', origin);
-//   }
-//   next();
-// });
 //
 // app.options('*', cors());
 
